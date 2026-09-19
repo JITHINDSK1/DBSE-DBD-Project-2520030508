@@ -1,8 +1,8 @@
--- DBSE Project: Forum Sujana Mall Parking Management System
+-- DBSE Project: Nexus Hyderabad Parking Management System
 -- Database Creation & Schema Definition
 
-CREATE DATABASE IF NOT EXISTS forum_mall_parking;
-USE forum_mall_parking;
+CREATE DATABASE IF NOT EXISTS nexus_parking;
+USE nexus_parking;
 
 -- ==================================================
 -- 1. TABLES
@@ -169,50 +169,50 @@ CREATE INDEX idx_parking_zones_floor ON parking_zones(floor_id);
 
 INSERT INTO malls (name, location, developer, operator, four_wheeler_capacity, two_wheeler_capacity, entry_exit_count, weekday_footfall)
 VALUES (
-    'Forum Sujana Mall', 
+    'Nexus Hyderabad', 
     'Kukatpally, Hyderabad', 
-    'Phoenix Group', 
-    'Forum Corporate Pvt Ltd', 
-    1400, 
+    'Prestige Group', 
+    'Nexus Select Trust', 
+    1250, 
     1550, 
     4, 
-    23000
+    25000
 );
 
 -- We only map parking floors for the interactive demo, and one retail floor as context.
 INSERT INTO floors (mall_id, name, display_order, floor_type) VALUES 
-(1, 'Lower Ground', 1, 'PARKING'),
-(1, 'Upper Ground', 2, 'RETAIL');
+(1, 'Basement 1', 1, 'PARKING'),
+(1, 'Ground Floor', 2, 'RETAIL');
 
 INSERT INTO parking_zones (floor_id, zone_code, zone_name, description) VALUES
-(1, 'LG-A', 'Lower Ground Zone A', 'Simulation Zone A'),
-(1, 'LG-B', 'Lower Ground Zone B', 'Simulation Zone B');
+(1, 'B1-A', 'Basement 1 Zone A', 'Simulation Zone A'),
+(1, 'B1-B', 'Basement 1 Zone B', 'Simulation Zone B');
 
 -- Seed 10 spots for Zone A
 INSERT INTO parking_spots (zone_id, spot_code, spot_type, status, spot_row, spot_column, is_ev, is_disabled) VALUES
-(1, 'LG-A-01', 'CAR', 'AVAILABLE', 1, 1, FALSE, TRUE),
-(1, 'LG-A-02', 'CAR', 'AVAILABLE', 1, 2, FALSE, FALSE),
-(1, 'LG-A-03', 'CAR', 'OCCUPIED', 1, 3, FALSE, FALSE),
-(1, 'LG-A-04', 'CAR', 'AVAILABLE', 1, 4, FALSE, FALSE),
-(1, 'LG-A-05', 'CAR', 'AVAILABLE', 1, 5, TRUE, FALSE),
-(1, 'LG-A-06', 'CAR', 'RESERVED', 2, 1, FALSE, FALSE),
-(1, 'LG-A-07', 'CAR', 'AVAILABLE', 2, 2, FALSE, FALSE),
-(1, 'LG-A-08', 'CAR', 'AVAILABLE', 2, 3, FALSE, FALSE),
-(1, 'LG-A-09', 'BIKE', 'AVAILABLE', 2, 4, FALSE, FALSE),
-(1, 'LG-A-10', 'BIKE', 'OCCUPIED', 2, 5, FALSE, FALSE);
+(1, 'B1-A-01', 'CAR', 'AVAILABLE', 1, 1, FALSE, TRUE),
+(1, 'B1-A-02', 'CAR', 'AVAILABLE', 1, 2, FALSE, FALSE),
+(1, 'B1-A-03', 'CAR', 'OCCUPIED', 1, 3, FALSE, FALSE),
+(1, 'B1-A-04', 'CAR', 'AVAILABLE', 1, 4, FALSE, FALSE),
+(1, 'B1-A-05', 'CAR', 'AVAILABLE', 1, 5, TRUE, FALSE),
+(1, 'B1-A-06', 'CAR', 'RESERVED', 2, 1, FALSE, FALSE),
+(1, 'B1-A-07', 'CAR', 'AVAILABLE', 2, 2, FALSE, FALSE),
+(1, 'B1-A-08', 'CAR', 'AVAILABLE', 2, 3, FALSE, FALSE),
+(1, 'B1-A-09', 'BIKE', 'AVAILABLE', 2, 4, FALSE, FALSE),
+(1, 'B1-A-10', 'BIKE', 'OCCUPIED', 2, 5, FALSE, FALSE);
 
 -- Seed 10 spots for Zone B
 INSERT INTO parking_spots (zone_id, spot_code, spot_type, status, spot_row, spot_column) VALUES
-(2, 'LG-B-01', 'CAR', 'AVAILABLE', 1, 1),
-(2, 'LG-B-02', 'CAR', 'AVAILABLE', 1, 2),
-(2, 'LG-B-03', 'CAR', 'AVAILABLE', 1, 3),
-(2, 'LG-B-04', 'CAR', 'MAINTENANCE', 1, 4),
-(2, 'LG-B-05', 'CAR', 'AVAILABLE', 1, 5),
-(2, 'LG-B-06', 'CAR', 'AVAILABLE', 2, 1),
-(2, 'LG-B-07', 'CAR', 'AVAILABLE', 2, 2),
-(2, 'LG-B-08', 'CAR', 'AVAILABLE', 2, 3),
-(2, 'LG-B-09', 'BIKE', 'AVAILABLE', 2, 4),
-(2, 'LG-B-10', 'BIKE', 'AVAILABLE', 2, 5);
+(2, 'B1-B-01', 'CAR', 'AVAILABLE', 1, 1),
+(2, 'B1-B-02', 'CAR', 'AVAILABLE', 1, 2),
+(2, 'B1-B-03', 'CAR', 'AVAILABLE', 1, 3),
+(2, 'B1-B-04', 'CAR', 'MAINTENANCE', 1, 4),
+(2, 'B1-B-05', 'CAR', 'AVAILABLE', 1, 5),
+(2, 'B1-B-06', 'CAR', 'AVAILABLE', 2, 1),
+(2, 'B1-B-07', 'CAR', 'AVAILABLE', 2, 2),
+(2, 'B1-B-08', 'CAR', 'AVAILABLE', 2, 3),
+(2, 'B1-B-09', 'BIKE', 'AVAILABLE', 2, 4),
+(2, 'B1-B-10', 'BIKE', 'AVAILABLE', 2, 5);
 
 INSERT INTO entry_gates (mall_id, gate_code, gate_name, gate_type, status) VALUES 
 (1, 'GATE-1', 'Main Entry', 'ENTRY', 'OPEN'),
@@ -222,9 +222,9 @@ INSERT INTO entry_gates (mall_id, gate_code, gate_name, gate_type, status) VALUE
 
 -- Dummy User (password is 'password' hashed with bcrypt)
 INSERT INTO users (name, email, password_hash, role) VALUES 
-('Admin User', 'admin@parkfinder.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'ADMIN'),
-('Provider User', 'provider@parkfinder.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'PROVIDER'),
-('Demo User', 'demo@parkfinder.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'USER');
+('Admin User', 'admin@nexus.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'ADMIN'),
+('Provider User', 'provider@nexus.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'PROVIDER'),
+('Demo User', 'demo@nexus.com', '$2a$10$TKh8H1.PfQx37YgCzwiKb.KjNyWgaHb9cbegNERk8pzOUpSV5q.pC', 'USER');
 
 INSERT INTO vehicles (user_id, registration_number, vehicle_type, make) VALUES 
 (3, 'TS09EX1234', 'CAR', 'Hyundai');
@@ -344,7 +344,7 @@ BEGIN
 
     IF v_status = 'AVAILABLE' THEN
         -- Generate Booking Reference
-        SET v_booking_ref = CONCAT('FS-', DATE_FORMAT(CURRENT_DATE(), '%Y%m%d'), '-', FLOOR(RAND() * 10000));
+        SET v_booking_ref = CONCAT('NX-', DATE_FORMAT(CURRENT_DATE(), '%Y%m%d'), '-', FLOOR(RAND() * 10000));
         
         -- Insert Booking
         INSERT INTO bookings (user_id, vehicle_id, spot_id, booking_reference, start_time, end_time, amount, status)

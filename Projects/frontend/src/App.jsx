@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import BookParking from './pages/BookParking';
-import ParkingDetails from './pages/ParkingDetails';
+
 import MyBookings from './pages/MyBookings';
 import Login from './pages/Login';
 import AdminDashboard from './pages/AdminDashboard';
@@ -19,7 +19,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/book" element={<BookParking />} />
               <Route path="/bookings" element={<MyBookings />} />
-              <Route path="/parking/:id" element={<ParkingDetails />} />
+
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Login />} />
               <Route path="/admin/dashboard" element={<AdminDashboard />} />

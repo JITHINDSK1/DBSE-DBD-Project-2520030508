@@ -32,7 +32,7 @@ export function NavHeader() {
         </>
       ) : (
         <>
-          <Tab setPosition={setPosition} to="/">Forum Mall Parking</Tab>
+          <Tab setPosition={setPosition} to="/">Nexus Hyderabad</Tab>
           <Tab setPosition={setPosition} to="/book">Interactive Map</Tab>
           <Tab setPosition={setPosition} to="/bookings">My Bookings</Tab>
         </>

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, MapPin, Building, Car, Bike, Navigation } from 'lucide-react';
-import { FlowButton } from '../components/ui/FlowButton';
+import { MapPin, Building, Car, Bike, Navigation, ArrowRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 
@@ -9,11 +8,9 @@ export default function Home() {
   const [mall, setMall] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   useEffect(() => {
     setLoading(true);
-    // Assume mall id 1 is Forum Sujana Mall
     api.get('/api/malls/1')
       .then(res => {
         setMall(res.data);
@@ -26,77 +23,138 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
-      <div style={{ maxWidth: '900px', margin: '0 auto', textAlign: 'center', marginBottom: '3rem', paddingTop: '2rem' }}>
-        <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '1rem', letterSpacing: '-1.5px', background: 'linear-gradient(90deg, var(--text-color), var(--primary-color))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-          Forum Sujana Mall Parking
-        </h1>
-        <p className="text-muted" style={{ fontSize: '1.25rem', marginBottom: '2rem', maxWidth: '600px', margin: '0 auto 2rem auto' }}>
-          Find your parking spot before you arrive. View real-time availability and reserve your spot instantly.
-        </p>
+    <div className="home-container fade-in">
+      {/* Hero Section */}
+      <section className="hero-section">
+        <div className="hero-bg"></div>
+        <div className="container hero-content text-center">
+          <h1 className="hero-title">Nexus Hyderabad Parking</h1>
+          <p className="hero-subtitle">
+            Find your parking spot before you arrive. Check availability, choose your parking level, and reserve a spot before you reach the mall.
+          </p>
+          <div className="hero-actions">
+            <button onClick={() => navigate('/book')} className="btn btn-primary btn-lg shadow-lg">
+              Find Parking <ArrowRight size={20} />
+            </button>
+            <a href="#mall-info" className="btn btn-outline btn-lg shadow-sm">
+              <Building size={20} /> View Mall Info
+            </a>
+          </div>
+        </div>
+      </section>
 
-        {loading ? (
-           <div>Loading live data...</div>
-        ) : mall ? (
-          <div className="card" style={{ padding: '2rem', borderRadius: '24px', boxShadow: 'var(--shadow-md)', textAlign: 'left' }}>
-            <div className="flex items-center justify-between mb-6 border-b pb-6" style={{ borderBottom: '1px solid var(--border-color)' }}>
-              <div>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>{mall.name}</h2>
-                <div className="text-muted flex items-center gap-1">
-                  <MapPin size={16} /> {mall.location}
-                </div>
+      {/* Live Metrics Section */}
+      <section className="metrics-section py-16 bg-white">
+        <div className="container">
+          <div className="text-center mb-12">
+            <h2 className="section-title">Live Parking Status</h2>
+            <p className="section-subtitle">Real-time availability across all parking levels</p>
+          </div>
+
+          {loading ? (
+            <div className="text-center text-muted py-12">Loading live data from sensors...</div>
+          ) : mall ? (
+            <div className="metrics-grid">
+              <div className="metric-card">
+                <div className="metric-icon icon-gray"><Car size={24} /></div>
+                <h3 className="metric-label">Total Capacity</h3>
+                <div className="metric-value">{mall.stats.total || 0}</div>
               </div>
-              <div className="flex gap-4">
-                <div className="text-center bg-gray-50 p-3 rounded-xl border">
-                  <div className="text-sm text-muted mb-1 flex items-center gap-1 justify-center"><Car size={14}/> Capacity</div>
-                  <div className="font-bold text-lg">{mall.four_wheeler_capacity}</div>
-                </div>
-                <div className="text-center bg-gray-50 p-3 rounded-xl border">
-                  <div className="text-sm text-muted mb-1 flex items-center gap-1 justify-center"><Bike size={14}/> Capacity</div>
-                  <div className="font-bold text-lg">{mall.two_wheeler_capacity}</div>
-                </div>
+              
+              <div className="metric-card bg-green-light border-green">
+                <div className="metric-icon icon-green"><div className="status-dot dot-green" /></div>
+                <h3 className="metric-label text-green-dark">Available</h3>
+                <div className="metric-value text-green-main">{mall.stats.available || 0}</div>
+              </div>
+
+              <div className="metric-card bg-red-light border-red">
+                <div className="metric-icon icon-red"><div className="status-dot dot-red" /></div>
+                <h3 className="metric-label text-red-dark">Occupied</h3>
+                <div className="metric-value text-red-main">{mall.stats.occupied || 0}</div>
+              </div>
+
+              <div className="metric-card bg-yellow-light border-yellow">
+                <div className="metric-icon icon-yellow"><div className="status-dot dot-yellow" /></div>
+                <h3 className="metric-label text-yellow-dark">Reserved</h3>
+                <div className="metric-value text-yellow-main">{mall.stats.reserved || 0}</div>
               </div>
             </div>
-
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem' }}>Live Simulation Status</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '1rem', marginBottom: '2rem' }}>
-              <div className="card flex flex-col items-center justify-center p-4" style={{ backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
-                <div className="text-sm font-semibold" style={{ color: '#166534' }}>AVAILABLE</div>
-                <div className="text-3xl font-bold" style={{ color: '#15803d' }}>{mall.stats.available || 0}</div>
-              </div>
-              <div className="card flex flex-col items-center justify-center p-4" style={{ backgroundColor: '#fef2f2', borderColor: '#fecaca' }}>
-                <div className="text-sm font-semibold" style={{ color: '#991b1b' }}>OCCUPIED</div>
-                <div className="text-3xl font-bold" style={{ color: '#b91c1c' }}>{mall.stats.occupied || 0}</div>
-              </div>
-              <div className="card flex flex-col items-center justify-center p-4" style={{ backgroundColor: '#fffbeb', borderColor: '#fde68a' }}>
-                <div className="text-sm font-semibold" style={{ color: '#92400e' }}>RESERVED</div>
-                <div className="text-3xl font-bold" style={{ color: '#b45309' }}>{mall.stats.reserved || 0}</div>
-              </div>
-              <div className="card flex flex-col items-center justify-center p-4" style={{ backgroundColor: '#f3f4f6', borderColor: '#e5e7eb' }}>
-                <div className="text-sm font-semibold" style={{ color: '#374151' }}>TOTAL SIMULATED</div>
-                <div className="text-3xl font-bold" style={{ color: '#4b5563' }}>{mall.stats.total || 0}</div>
-              </div>
+          ) : (
+            <div className="error-card">
+              Error connecting to mall sensors. Please ensure backend services are running.
             </div>
+          )}
+        </div>
+      </section>
 
-            <div className="flex justify-center">
-              <FlowButton 
-                text="Book a Parking Spot" 
-                onClick={() => navigate('/book')}
-                style={{ padding: '1rem 3rem', fontSize: '1.2rem' }}
-              />
+      {/* Features / Levels Preview */}
+      <section className="features-section py-16 bg-gray border-y">
+        <div className="container">
+          <div className="features-grid">
+            <div className="card feature-card">
+              <h3 className="card-title">Parking Levels</h3>
+              <ul className="feature-list">
+                <li><span className="font-semibold">Basement 1</span> <span className="badge badge-gray">2 Zones</span></li>
+                <li className="text-muted"><span className="font-semibold">Basement 2</span> <span className="badge badge-outline">Coming Soon</span></li>
+              </ul>
+            </div>
+            
+            <div className="card feature-card">
+              <h3 className="card-title">Specialized Parking</h3>
+              <ul className="feature-list">
+                <li>
+                   <div className="icon-badge bg-green-light text-green-dark">EV</div>
+                   <span className="font-semibold">EV Charging Bays</span>
+                </li>
+                <li>
+                   <div className="icon-badge bg-blue-light text-blue-dark">♿</div>
+                   <span className="font-semibold">Accessible Parking</span>
+                </li>
+              </ul>
+            </div>
+            
+            <div className="card feature-card">
+              <h3 className="card-title">Pricing</h3>
+              <ul className="feature-list">
+                <li><span className="font-semibold flex items-center gap-2"><Car size={16}/> 4-Wheeler</span> <span className="font-bold">₹50/hr</span></li>
+                <li><span className="font-semibold flex items-center gap-2"><Bike size={16}/> 2-Wheeler</span> <span className="font-bold">₹20/hr</span></li>
+              </ul>
             </div>
           </div>
-        ) : (
-          <div>Error loading mall data. Make sure backend is seeded.</div>
-        )}
-      </div>
-      
-      <div style={{ marginTop: '4rem', textAlign: 'center' }}>
-        <p className="text-muted text-sm">
-          * Note: Individual parking zones, spot numbers, and live occupancy are simulated for academic demonstration. <br/>
-          Mall metadata and official capacities are sourced from Forum Sujana Mall documentation.
-        </p>
-      </div>
+        </div>
+      </section>
+
+      {/* Mall Info Section */}
+      <section id="mall-info" className="mall-info-section py-20 bg-white">
+        <div className="container text-center max-w-md mx-auto">
+          <Building size={48} className="mx-auto text-primary-color mb-6" />
+          <h2 className="section-title mb-4">Nexus Hyderabad</h2>
+          <p className="text-lg text-muted mb-8">
+            Kukatpally, Hyderabad, Telangana 500072
+          </p>
+          <div className="flex justify-center">
+             <a 
+               href="https://maps.google.com/?q=Nexus+Hyderabad+Kukatpally" 
+               target="_blank" 
+               rel="noreferrer"
+               className="btn btn-outline flex items-center gap-2 shadow-sm"
+             >
+               <Navigation size={18} /> Open in Google Maps
+             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Disclaimer */}
+      <footer className="footer bg-dark text-gray-400 py-8 text-center text-sm">
+        <div className="container">
+          <p className="mb-2">© 2026 Nexus Hyderabad Parking Prototype.</p>
+          <p className="opacity-75">
+            * Note: Parking-space positions and live occupancy in this academic prototype are simulated for demonstration. <br/>
+            Mall metadata and capacities are based on official Nexus Select Trust reporting.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }

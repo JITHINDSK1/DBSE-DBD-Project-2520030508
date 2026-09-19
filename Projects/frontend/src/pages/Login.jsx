@@ -9,18 +9,23 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
       if (isLogin) {
-        const res = await api.post('/api/login', { email, password });
+        const res = await api.post('/api/auth/login', { email, password });
         login(res.data.token, res.data.user);
       } else {
-        const res = await api.post('/api/signup', { name, email, password });
+        const res = await api.post('/api/auth/signup', { name, email, password });
         login(res.data.token, res.data.user);
       }
       
@@ -28,49 +33,88 @@ export default function Login() {
       const redirect = searchParams.get('redirect') || '/';
       navigate(redirect);
     } catch (err) {
-      setError(err.response?.data?.error || 'An error occurred');
+      if (err.response) {
+        setError(err.response.data?.error || 'Invalid credentials. Please try again.');
+      } else if (err.request) {
+        setError('Unable to connect to authentication server.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '4rem auto', padding: '2rem', border: '1.5px solid #000', borderRadius: '16px', background: '#fff' }}>
-      <h2 style={{ marginBottom: '1.5rem', textAlign: 'center' }}>{isLogin ? 'Login to ParkFinder' : 'Create an Account'}</h2>
-      {error && <div style={{ color: 'red', marginBottom: '1rem' }}>{error}</div>}
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        {!isLogin && (
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ padding: '0.75rem', width: '100%', borderRadius: '8px' }}
-          />
+    <div className="flex justify-center items-center fade-in" style={{ minHeight: '60vh', padding: '2rem' }}>
+      <div className="card w-full max-w-md shadow-lg">
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          {isLogin ? 'Login to Nexus Parking' : 'Create an Account'}
+        </h2>
+        
+        {error && (
+          <div className="error-msg">
+            {error}
+          </div>
         )}
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          style={{ padding: '0.75rem', width: '100%', borderRadius: '8px' }}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          style={{ padding: '0.75rem', width: '100%', borderRadius: '8px' }}
-        />
-        <button type="submit" className="btn btn-primary" style={{ padding: '0.75rem' }}>
-          {isLogin ? 'Login' : 'Sign up'}
-        </button>
-      </form>
-      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-        <button onClick={() => setIsLogin(!isLogin)} style={{ textDecoration: 'underline' }}>
-          {isLogin ? "Don't have an account? Sign up" : "Already have an account? Login"}
-        </button>
+        
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {!isLogin && (
+            <div>
+              <label className="text-sm font-semibold mb-2" style={{ display: 'block' }}>Name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="w-full"
+              />
+            </div>
+          )}
+          
+          <div>
+            <label className="text-sm font-semibold mb-2" style={{ display: 'block' }}>Email Address</label>
+            <input
+              type="email"
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="w-full"
+            />
+          </div>
+          
+          <div>
+            <label className="text-sm font-semibold mb-2" style={{ display: 'block' }}>Password</label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="w-full"
+            />
+          </div>
+          
+          <button 
+            type="submit" 
+            className="btn btn-primary w-full mt-4"
+            disabled={loading}
+          >
+            {loading ? 'Processing...' : (isLogin ? 'Login' : 'Sign up')}
+          </button>
+        </form>
+        
+        <div className="mt-6 text-center text-sm">
+          <button 
+            onClick={() => setIsLogin(!isLogin)} 
+            className="font-semibold text-primary-color"
+            style={{ textDecoration: 'underline', textUnderlineOffset: '4px' }}
+          >
+            {isLogin ? "Don't have an account? Sign up" : "Already have an account? Login"}
+          </button>
+        </div>
       </div>
     </div>
   );
