@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { MapPin, User as UserIcon } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import { NavHeader } from './ui/NavHeader';
 import { useAuth } from '../context/AuthContext';
 
@@ -17,27 +17,22 @@ export default function Navbar() {
     navigate(newMode === 'admin' ? '/admin/dashboard' : '/');
   };
 
-  const isAdmin = user && (user.role === 'ADMIN' || user.role === 'PROVIDER');
-
   return (
     <nav style={{
       backgroundColor: 'var(--surface-color)',
-      borderBottom: '1px solid var(--border-color)',
+      borderBottom: '1.5px solid var(--border-color)',
       padding: '0.75rem 0',
       position: 'sticky',
       top: 0,
-      zIndex: 50,
-      boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+      zIndex: 10
     }}>
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto', alignItems: 'center', gap: '2rem' }}>
+      <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center' }}>
         
         {/* Left: Logo */}
         <div>
-          <Link to="/" className="flex items-center gap-2 text-gray-900 hover:opacity-80 transition-opacity">
-            <div className="bg-primary text-white p-1.5 rounded-lg">
-              <MapPin size={22} />
-            </div>
-            <span style={{ fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.5px' }}>Nexus Hyderabad</span>
+          <Link to="/" className="flex items-center gap-2" style={{ fontWeight: 800, fontSize: '1.25rem', color: '#000000', letterSpacing: '-0.5px' }}>
+            <MapPin size={24} />
+            <span>ParkFinder</span>
           </Link>
         </div>
 
@@ -49,35 +44,18 @@ export default function Navbar() {
         {/* Right: Auth */}
         <div style={{ justifySelf: 'end' }}>
           <div className="flex items-center gap-4">
-            {isAdmin && (
-              <button 
-                onClick={handleModeSwitch} 
-                className="text-sm font-semibold text-gray-500 hover:text-gray-900 underline underline-offset-4"
-              >
-                {mode === 'user' ? 'Admin Dashboard' : 'User View'}
-              </button>
-            )}
-            
+            <button onClick={handleModeSwitch} style={{ fontSize: '0.9rem', fontWeight: 600, textDecoration: 'underline', color: 'var(--text-muted)' }}>
+              {mode === 'user' ? 'Switch to Admin' : 'Switch to User'}
+            </button>
             {user ? (
-              <div className="flex items-center gap-4 border-l pl-4">
-                <div className="flex items-center gap-2">
-                  <div className="bg-gray-100 p-1.5 rounded-full text-gray-600">
-                    <UserIcon size={18} />
-                  </div>
-                  <span className="font-semibold text-sm hidden sm:block">{user.name}</span>
-                </div>
-                <button 
-                  onClick={() => {
-                    logout();
-                    navigate('/');
-                  }} 
-                  className="btn btn-outline text-sm px-3 py-1.5"
-                >
+              <div className="flex items-center gap-4">
+                <span className="font-semibold">{user.name}</span>
+                <button onClick={logout} className="btn btn-outline" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
                   Logout
                 </button>
               </div>
             ) : (
-              <Link to="/login" className="btn btn-primary text-sm px-4 py-2 shadow-sm font-semibold">
+              <Link to="/login" className="btn btn-primary" style={{ padding: '0.4rem 1rem', fontSize: '0.9rem' }}>
                 Login / Sign up
               </Link>
             )}
