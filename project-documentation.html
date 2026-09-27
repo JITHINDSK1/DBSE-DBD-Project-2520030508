@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ParkFinder Project Architecture & Connections</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; max-width: 1000px; margin: 0 auto; padding: 20px; background-color: #f4f7f6; }
+        h1, h2, h3 { color: #2c3e50; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        pre { background: #282c34; color: #abb2bf; padding: 15px; border-radius: 5px; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #2c3e50; color: white; }
+        .badge { display: inline-block; padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; }
+        .badge-get { background-color: #61affe; color: #fff; }
+        .badge-post { background-color: #49cc90; color: #fff; }
+        .badge-put { background-color: #fca130; color: #fff; }
+        .badge-delete { background-color: #f93e3e; color: #fff; }
+        .badge-patch { background-color: #50e3c2; color: #fff; }
+    </style>
+</head>
+<body>
+
+    <h1 style="text-align: center;">ParkFinder Project Overview</h1>
+
+    <div class="card">
+        <h2>1. Connection Strings & Environment</h2>
+        <p>The system connects via the following defaults in the absence of a <code>.env</code> file (note that the <i>README.md</i> says it's in-memory, but the codebase actually connects to a MySQL database).</p>
+        
+        <h3>MySQL Database Connection (Backend)</h3>
+        <ul>
+            <li><b>Host:</b> <code>localhost</code> (env: <code>DB_HOST</code>)</li>
+            <li><b>User:</b> <code>root</code> (env: <code>DB_USER</code>)</li>
+            <li><b>Password:</b> <code>root</code> (env: <code>DB_PASSWORD</code>)</li>
+            <li><b>Database:</b> <code>parkfinder</code> (env: <code>DB_NAME</code>)</li>
+            <li><b>Connection Limit:</b> 10</li>
+        </ul>
+        <p><i>JDBC/Connection String equivalent:</i> <code>mysql://root:root@localhost:3306/parkfinder</code></p>
+
+        <h3>Frontend to Backend Connection</h3>
+        <ul>
+            <li><b>Base URL:</b> <code>http://localhost:5000</code></li>
+            <li><b>Axios Instance:</b> Located at <code>frontend/src/api/axios.js</code></li>
+        </ul>
+
+        <h3>Security & Auth</h3>
+        <ul>
+            <li><b>JWT Secret:</b> <code>your_super_secret_jwt_key_123</code> (env: <code>JWT_SECRET</code>)</li>
+            <li><b>Token Expiry:</b> 7 days</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h2>2. Database Schema (MySQL)</h2>
+        <p>The database consists of three main tables: <b>users</b>, <b>lots</b>, and <b>bookings</b>.</p>
+        
+        <h3>users</h3>
+        <table>
+            <tr><th>Column</th><th>Type</th><th>Constraints</th></tr>
+            <tr><td>id</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td></tr>
+            <tr><td>name</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>email</td><td>VARCHAR(255)</td><td>NOT NULL, UNIQUE</td></tr>
+            <tr><td>password_hash</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+        </table>
+
+        <h3>lots</h3>
+        <table>
+            <tr><th>Column</th><th>Type</th><th>Constraints</th></tr>
+            <tr><td>id</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td></tr>
+            <tr><td>name</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>area</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>slots</td><td>INT</td><td>NOT NULL</td></tr>
+            <tr><td>price_per_hour</td><td>DECIMAL(10, 2)</td><td>NOT NULL</td></tr>
+            <tr><td>owner_id</td><td>INT</td><td>(Used in provider routes, dynamically inserted)</td></tr>
+        </table>
+
+        <h3>bookings</h3>
+        <table>
+            <tr><th>Column</th><th>Type</th><th>Constraints</th></tr>
+            <tr><td>id</td><td>INT</td><td>PRIMARY KEY, AUTO_INCREMENT</td></tr>
+            <tr><td>user_id</td><td>INT</td><td>FOREIGN KEY references users(id)</td></tr>
+            <tr><td>lot_id</td><td>INT</td><td>FOREIGN KEY references lots(id)</td></tr>
+            <tr><td>lot_name</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>area</td><td>VARCHAR(255)</td><td>NOT NULL</td></tr>
+            <tr><td>price_per_hour</td><td>DECIMAL(10, 2)</td><td>NOT NULL</td></tr>
+            <tr><td>hours</td><td>INT</td><td>NOT NULL</td></tr>
+            <tr><td>total</td><td>DECIMAL(10, 2)</td><td>NOT NULL</td></tr>
+            <tr><td>status</td><td>ENUM</td><td>'confirmed' or 'cancelled', DEFAULT 'confirmed'</td></tr>
+            <tr><td>created_at</td><td>TIMESTAMP</td><td>DEFAULT CURRENT_TIMESTAMP</td></tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>3. Backend API Endpoints</h2>
+        
+        <h3>Authentication</h3>
+        <ul>
+            <li><span class="badge badge-post">POST</span> <code>/api/signup</code> - Register a new user</li>
+            <li><span class="badge badge-post">POST</span> <code>/api/login</code> - Authenticate and get JWT</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/me</code> - Get current user profile</li>
+        </ul>
+
+        <h3>Parking Lots (Public)</h3>
+        <ul>
+            <li><span class="badge badge-get">GET</span> <code>/api/lots</code> - Get all lots (supports <code>?sort=available|price</code>)</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/lots/:id</code> - Get specific lot details</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/parkings</code> - Legacy alias for /api/lots</li>
+        </ul>
+
+        <h3>Bookings (Protected)</h3>
+        <ul>
+            <li><span class="badge badge-post">POST</span> <code>/api/bookings</code> - Book a parking slot (decrements slots)</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/bookings</code> - View my bookings</li>
+            <li><span class="badge badge-post">POST</span> <code>/api/bookings/:id/cancel</code> - Cancel booking (increments slots)</li>
+            <li><span class="badge badge-patch">PATCH</span> <code>/api/bookings/:id/cancel</code> - Legacy alias for cancellation</li>
+        </ul>
+
+        <h3>Provider / Lot Owner Routes (Protected)</h3>
+        <ul>
+            <li><span class="badge badge-post">POST</span> <code>/api/lots</code> - Create a new parking lot</li>
+            <li><span class="badge badge-put">PUT</span> <code>/api/lots/:id</code> - Update lot details</li>
+            <li><span class="badge badge-delete">DELETE</span> <code>/api/lots/:id</code> - Delete a lot</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/provider/lots</code> - View lots owned by current user</li>
+            <li><span class="badge badge-get">GET</span> <code>/api/provider/bookings</code> - View all bookings made on owned lots</li>
+        </ul>
+    </div>
+
+</body>
+</html>
