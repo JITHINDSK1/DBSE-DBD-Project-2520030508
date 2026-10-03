@@ -1,3 +1,8 @@
+## Hosting
+
+http://localhost:5173/
+
+
 ## Database
 MongoDB Atlas, db name: parkfinder
 3 collections: users, parkings, bookings
