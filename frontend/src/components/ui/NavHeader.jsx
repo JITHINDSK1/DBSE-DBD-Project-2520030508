@@ -34,7 +34,7 @@ export function NavHeader() {
         </>
       ) : (
         <>
-          <Tab setPosition={setPosition} to="/parking">Find parking</Tab>
+          <Tab setPosition={setPosition} to="/">Find parking</Tab>
           <Tab setPosition={setPosition} to="/bookings">My bookings</Tab>
         </>
       )}

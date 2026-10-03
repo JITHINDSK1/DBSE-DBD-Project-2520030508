@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Clock, MapPin, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, CheckCircle, XCircle, Navigation } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
+import { openDirections } from '../utils/directions';
 
 export default function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -22,7 +23,7 @@ export default function MyBookings() {
   }, [user, authLoading, navigate]);
 
   const fetchBookings = () => {
-    api.get('/api/bookings')
+    api.get('/api/bookings/me')
       .then(res => {
         setBookings(res.data);
         setLoading(false);
@@ -42,7 +43,7 @@ export default function MyBookings() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="text-center py-12">Loading...</div>;
 
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', paddingTop: '2rem' }}>
@@ -64,7 +65,7 @@ export default function MyBookings() {
                 <div className="flex justify-between items-start">
                   <div>
                     <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                      {booking.floor_name} - Spot {booking.spot_number}
+                      {booking.parkingName || 'Unknown Parking'}
                     </h3>
                   </div>
                   <div style={{ 
@@ -85,10 +86,18 @@ export default function MyBookings() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', padding: '1rem', backgroundColor: '#f9fafb', borderRadius: '12px', border: '1px solid var(--border-color)' }}>
                   <div>
+                    <div className="text-muted" style={{ fontSize: '0.8rem' }}>Location & Spot</div>
+                    <div className="font-semibold text-sm">
+                      {booking.location || booking.area} <br/> 
+                      <span className="text-muted">Spot: {booking.spotName}</span>
+                    </div>
+                  </div>
+                  <div>
                     <div className="text-muted" style={{ fontSize: '0.8rem' }}>Start Time</div>
-                    <div className="font-semibold flex items-center gap-1">
+                    <div className="font-semibold flex items-center gap-1 text-sm">
                       <Calendar size={14} /> {new Date(booking.startTime).toLocaleDateString()}
                     </div>
+                    <div className="text-xs text-muted mt-1">Ref: {booking.reference}</div>
                   </div>
                   <div>
                     <div className="text-muted" style={{ fontSize: '0.8rem' }}>Duration</div>
@@ -102,24 +111,24 @@ export default function MyBookings() {
                   </div>
                 </div>
                 
-                {isConfirmed && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '1rem', marginTop: '0.5rem' }}>
-                    <Link
-                      to={`/bookings/${booking._id}/directions`}
-                      className="btn btn-outline"
-                      style={{ color: 'var(--primary-color)', borderColor: 'var(--primary-color)' }}
-                    >
-                      View Directions
-                    </Link>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '0.5rem' }}>
+                  <button 
+                    className="btn btn-outline flex items-center gap-1"
+                    style={{ fontSize: '0.9rem', padding: '0.4rem 0.875rem' }}
+                    onClick={() => openDirections(booking.parkingName, booking.location || booking.area)}
+                  >
+                    <Navigation size={14} /> Show Directions
+                  </button>
+                  {isConfirmed && (
                     <button 
                       className="btn btn-outline" 
-                      style={{ color: 'var(--danger-color)', borderColor: 'var(--danger-color)' }}
+                      style={{ color: 'var(--danger-color)', borderColor: 'var(--danger-color)', fontSize: '0.9rem', padding: '0.4rem 0.875rem' }}
                       onClick={() => cancelBooking(booking._id)}
                     >
                       Cancel Booking
                     </button>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             );
           })}

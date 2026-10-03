@@ -32,7 +32,7 @@ export default function Navbar() {
         <div>
           <Link to="/" className="flex items-center gap-2" style={{ fontWeight: 800, fontSize: '1.25rem', color: '#000000', letterSpacing: '-0.5px' }}>
             <MapPin size={24} />
-            <span>ParkFinder</span>
+            <span>Parking Finder</span>
           </Link>
         </div>
 
@@ -44,9 +44,11 @@ export default function Navbar() {
         {/* Right: Auth */}
         <div style={{ justifySelf: 'end' }}>
           <div className="flex items-center gap-4">
-            <button onClick={handleModeSwitch} style={{ fontSize: '0.9rem', fontWeight: 600, textDecoration: 'underline', color: 'var(--text-muted)' }}>
-              {mode === 'user' ? 'Switch to Provider' : 'Switch to User'}
-            </button>
+            {user && (user.role === 'PROVIDER' || user.role === 'ADMIN') && (
+              <button onClick={handleModeSwitch} style={{ fontSize: '0.9rem', fontWeight: 600, textDecoration: 'underline', color: 'var(--text-muted)' }}>
+                {mode === 'user' ? 'Switch to Provider' : 'Switch to User'}
+              </button>
+            )}
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="font-semibold">{user.name}</span>

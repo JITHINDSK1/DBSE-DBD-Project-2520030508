@@ -1,13 +1,16 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
-import BookingDirections from './pages/BookingDirections';
+
 import MyBookings from './pages/MyBookings';
 import Login from './pages/Login';
-import Parking from './pages/Parking';
-import FullParkingMap from './pages/FullParkingMap';
 
 import { AuthProvider } from './context/AuthContext';
+
+import ParkingDetails from './pages/ParkingDetails';
+import ProviderLots from './pages/ProviderLots';
+import ProviderAddLot from './pages/ProviderAddLot';
+import ProviderBookings from './pages/ProviderBookings';
 
 function App() {
   return (
@@ -18,15 +21,19 @@ function App() {
           <main className="container" style={{ padding: '2rem 1rem' }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/parking" element={<Parking />} />
-              <Route path="/parking/:floorId/map" element={<FullParkingMap />} />
               <Route path="/bookings" element={<MyBookings />} />
-              <Route path="/bookings/:id/directions" element={<BookingDirections />} />
+              <Route path="/parking/:id" element={<ParkingDetails />} />
+
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Login />} />
 
+              {/* Provider Routes */}
+              <Route path="/provider/lots" element={<ProviderLots />} />
+              <Route path="/provider/add-lot" element={<ProviderAddLot />} />
+              <Route path="/provider/bookings" element={<ProviderBookings />} />
             </Routes>
           </main>
+
         </div>
       </Router>
     </AuthProvider>
