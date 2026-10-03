@@ -15,6 +15,7 @@ backend/.env
 # Logs
 *.log
 logs/
+*.sql
 
 # IDE & OS
 .vscode/

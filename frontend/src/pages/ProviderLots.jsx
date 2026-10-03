@@ -25,12 +25,12 @@ export default function ProviderLots() {
   };
 
   const handleDelete = async (id) => {
-    if(!window.confirm('Are you sure you want to delete this parking lot?')) return;
+    if (!window.confirm('Are you sure you want to delete this parking lot?')) return;
     try {
-      await api.delete(`/api/lots/${id}`);
+      await api.delete(`/api/provider/lots/${id}`);
       fetchLots();
-    } catch(err) {
-      alert('Failed to delete lot');
+    } catch (err) {
+      alert(err.response?.data?.error || 'Failed to delete lot');
     }
   };
 

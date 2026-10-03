@@ -355,6 +355,38 @@ app.get('/api/provider/bookings', auth, isProvider, async (req, res) => {
   }
 });
 
+const deleteLotHandler = async (req, res) => {
+  const connection = await db.getConnection();
+  try {
+    await connection.beginTransaction();
+
+    const [lots] = await connection.query('SELECT * FROM parking_lots WHERE id = ? FOR UPDATE', [req.params.id]);
+    if (lots.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: 'Parking lot not found' });
+    }
+
+    const lot = lots[0];
+    if (req.user.role !== 'ADMIN' && lot.owner_id !== req.user.id) {
+      await connection.rollback();
+      return res.status(403).json({ error: 'Unauthorized to delete this parking lot' });
+    }
+
+    await connection.query('DELETE FROM parking_lots WHERE id = ?', [req.params.id]);
+    await connection.commit();
+    res.json({ success: true, message: 'Parking lot deleted successfully' });
+  } catch (err) {
+    await connection.rollback();
+    console.error('Delete lot error:', err);
+    res.status(500).json({ error: 'Failed to delete lot' });
+  } finally {
+    connection.release();
+  }
+};
+
+app.delete('/api/provider/lots/:id', auth, isProvider, deleteLotHandler);
+app.delete('/api/lots/:id', auth, isProvider, deleteLotHandler);
+
 app.get('/health', (req, res) => res.json({ ok: true }));
 
 const PORT = process.env.PORT || 5000;
